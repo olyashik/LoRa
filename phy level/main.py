@@ -24,6 +24,7 @@ from Demodulation import *
 from BER import *
 from PHY import *
 import sys
+import random
 
 # ---------------------------------------------------------------------------
 # 10. Демонстрация
@@ -38,7 +39,8 @@ if __name__ == "__main__":
  
     # Параметры
     p = LoRaParams(sf=7, bw=125e3, cr=1, tx_power_dbm=14)
-    payload = b"Hello LoRa!"
+    mes = random.randint(0, 1)
+    payload = str(mes)
  
     # --- ToA ---
     toa = compute_toa(len(payload), p)
@@ -55,7 +57,7 @@ if __name__ == "__main__":
     print(f"    Длина сигнала: {len(tx_signal)} сэмплов")
  
     # Канал: 2 км, NF=6 дБ
-    dist_m = 2000
+    dist_m = 0
     rx_signal, snr = simulate_channel(tx_signal, p, dist_m)
     print(f"    Расстояние:    {dist_m} м")
     print(f"    SNR на входе:  {snr:.1f} дБ")

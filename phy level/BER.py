@@ -5,6 +5,7 @@
 # "Closed-Form Approximation of LoRa Modulation BER Performance"
 
 import math
+import random
 import LoRa_Params
 from scipy.special import erfc
 
@@ -46,3 +47,33 @@ def snr_threshold_db(p: LoRa_Params) -> float:
     thresholds = {7: -7.5, 8: -10.0, 9: -12.5,
                   10: -15.0, 11: -17.5, 12: -20.0}
     return thresholds[p.sf]
+
+def BER_model(p: LoRa_Params):
+    '''
+    msgLen = 1000;
+    EbN0dB = ...; % вектор значений ОСШ на бит (дБ); например от 0 до 15
+    BER = zeros(..., ...); % вероятность битовой ошибки в результате моделирования для разных Eb/N0
+    NumExp = 100*msgLen;
+
+    for i = 1:1:length(EbN0dB)
+        for  n = 1:NumExp
+        % Передатчик (генерация случайных информационных битов, маппер, формирователь комплексной огибающей)
+        % Канал с АБГШ (в зависмости от текущего EbN0dB(i)
+        % Демодулятор
+        % Расчет BER (сравнение принятых битов с переданными):
+        BER(i) = BER(i) + sum(rec_bits~=bits)/msgLen;
+        end
+    end
+
+    BER = BER / NumExp;
+    '''
+    NumIter = 10e4
+    EbNodB = 40
+    BER = [];
+    rand = 0;
+    for ebn0db in range(EbNodB):
+        for signal in range(100):
+            rand = random.randint(0,1)
+            
+
+    
