@@ -7,7 +7,7 @@
 import numpy as np
 from typing import Tuple
 import math
-import LoRa_Params
+from LoRa_Params import LoRaParams
 
 def path_loss_db(distance_m: float, freq_hz: float,
                  path_loss_exp: float = 2.7) -> float:
@@ -45,27 +45,33 @@ def add_awgn(signal: np.ndarray, snr_db: float) -> np.ndarray:
     return signal + noise
 
 
-def simulate_channel(signal: np.ndarray, p: LoRa_Params,
-                     distance_m: float, noise_figure_db: float = 6.0,
-                     temperature_k: float = 290.0) -> Tuple[np.ndarray, float]:
+def simulate_channel(signal: np.ndarray, p: LoRaParams,
+                     distance_m: float      = 2000.0,
+                     noise_figure_db: float = 6.0,
+                     temperature_k: float   = 290.0,
+                     path_loss_exp: float   = 2.7,
+                     enable_awgn: bool      = True,
+                     enable_path_loss: bool = True,
+                     fixed_snr_db: float    = 10.0) -> Tuple[np.ndarray, float]:
     """
-    Полная модель канала: затухание + тепловой шум + шум-фигура приёмника.
+    Модель канала с управляемыми флагами из lora_setup.py.
 
-    Тепловой шум (формула Джонсона-Найквиста):
-        N_thermal = k·T·B   [Вт]    (k = 1.38*10⁻²³ Дж/К)
-        N_thermal_dBm = 10·log10(k·T·B) + 30
+    enable_path_loss = False → SNR = fixed_snr_db
+    enable_awgn      = False → сигнал без шума (SNR = +∞)
 
-    SNR на входе приёмника:
-        SNR = P_rx - N_thermal_dBm - NF   [дБ]
-    где P_rx = P_tx - PL(d)
+    Тепловой шум (Джонсон–Найквист):
+        N₀ = k·T·B  [Вт],  N₀_dBm = 10·log10(k·T·B) + 30
     """
-    k_boltzmann = 1.38e-23
-    n_thermal_dbm = (10 * math.log10(k_boltzmann * temperature_k * p.bw) + 30)
+    if not enable_path_loss:
+        snr_db = fixed_snr_db
+    else:
+        k_b    = 1.38e-23
+        n0_dbm = 10 * math.log10(k_b * temperature_k * p.bw) + 30
+        pl     = path_loss_db(distance_m, p.freq_hz, path_loss_exp)
+        p_rx   = p.tx_power_dbm - pl
+        snr_db = p_rx - n0_dbm - noise_figure_db
 
-    pl = path_loss_db(distance_m, p.freq_hz)
-    p_rx_dbm = p.tx_power_dbm - pl
+    if not enable_awgn:
+        return signal.copy(), snr_db
 
-    snr_db = p_rx_dbm - n_thermal_dbm - noise_figure_db
-
-    received = add_awgn(signal, snr_db)
-    return received, snr_db
+    return add_awgn(signal, snr_db), snr_db
