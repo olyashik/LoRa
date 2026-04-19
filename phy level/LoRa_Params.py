@@ -11,6 +11,7 @@ from dataclasses import dataclass
 class LoRaParams:
     """
     Все настраиваемые параметры LoRa.
+<<<<<<< HEAD
     """
     sf: int             = 7        # Spreading Factor: 7..12
     bw: float           = 125e3    # Bandwidth: 125 / 250 / 500 кГц
@@ -20,6 +21,18 @@ class LoRaParams:
     preamble_symbols: int = 8      # стандарт LoRaWAN: 8 символов преамбулы
     explicit_header: bool = True   # явный заголовок (стандарт для LoRaWAN)
     low_dr_opt: bool    = False    # Low Data Rate Optimize (см. __post_init__)
+=======
+    Значения по умолчанию.
+    '''
+    sf: int   = 7          # Spreading Factor: 7..12
+    bw: float = 500e3      # Bandwidth: 125 / 250 / 500 кГц
+    cr: int   = 1          # Coding Rate denominator: 1→4/5, 2→4/6, 3→4/7, 4→4/8
+    tx_power_dbm: float = 40.0   # мощность передатчика, дБм 
+    freq_hz: float = 868.1e6     # несущая частота
+    preamble_symbols: int = 8    # стандарт LoRaWAN: 8 символов преамбулы
+    explicit_header: bool = True # явный заголовок (стандарт для LoRaWAN)
+    low_dr_opt: bool = False      # Low Data Rate Optimize (включать при SF≥11, BW=125к)
+>>>>>>> 5e864930649e385130a592f091e262adcfe2149e
 
     def __post_init__(self):
         assert 7 <= self.sf <= 12,           "SF должен быть от 7 до 12"
