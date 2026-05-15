@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------------
-# 5. AWGN-канал + затухание
+# AWGN-канал + затухание
 # ---------------------------------------------------------------------------
-# Источник: формула Фрииса + логарифмическая модель потерь (log-distance)
+
 
 import numpy as np
 from typing import Tuple
@@ -50,35 +50,25 @@ def simulate_channel(signal: np.ndarray, p: LoRaParams,
                      enable_awgn: bool = True,
                      enable_path_loss: bool = True,
                      fixed_snr_db: float = 10.0) -> Tuple[np.ndarray, float]:
-    """
-    Модель канала с управляемыми флагами.
 
-    Флаги из lora_setup.py:
-        enable_path_loss = True  → потери считаются по расстоянию и модели Фрииса
-        enable_path_loss = False → используется fixed_snr_db напрямую
-        enable_awgn      = True  → добавляется AWGN-шум
-        enable_awgn      = False → сигнал проходит без изменений (идеальный канал)
+    if not enable_awgn:
+        # Идеальный канал — без шума
+        return signal.copy(), fixed_snr_db
 
-    Тепловой шум (Джонсон–Найквист):
-        N_thermal = k·T·B  [Вт]
-        N_dBm = 10·log10(k·T·B) + 30
-
-    SNR на входе приёмника (при enable_path_loss = True):
-        SNR = P_tx - PL(d) - N_dBm - NF
-    """
-    if not enable_path_loss:
-        # Канал без затухания: используем фиксированный SNR из lora_setup
-        snr_db = fixed_snr_db
-    else:
-        # Полная физическая модель
+    if enable_path_loss:
+        # Физическая модель: SNR считается по расстоянию
         k_b           = 1.38e-23
         n_thermal_dbm = 10 * math.log10(k_b * temperature_k * p.bw) + 30
         pl            = path_loss_db(distance_m, p.freq_hz, path_loss_exp)
         p_rx_dbm      = p.tx_power_dbm - pl
         snr_db        = p_rx_dbm - n_thermal_dbm - noise_figure_db
-
-    if not enable_awgn:
-        # Идеальный канал: возвращаем сигнал без шума
-        return signal.copy(), snr_db
+    else:
+        # Используем fixed_snr_db напрямую — режим для BER-симуляции
+        snr_db = fixed_snr_db
 
     return add_awgn(signal, snr_db), snr_db
+
+# комплексное сопряжение в питоне (функции)
+# почитать учебник по матлабу
+# место, где потерялся канал
+# на физ.уровне мы всё равно работаем с цифрой
