@@ -1,5 +1,5 @@
 # ---------------------------------------------------------------------------
-# 4. Модуляция: байты → символы → чирпы (передатчик)
+# Модуляция: байты → символы → чирпы 
 # ---------------------------------------------------------------------------
 
 import numpy as np
@@ -9,7 +9,7 @@ from LoRa_Coding import *
 from gray import *
 
 
-def bytes_to_symbols(data: bytes, p: LoRaParams) -> np.ndarray:
+def modulate(data: bytes, p: LoRaParams) -> np.ndarray:
     """
     Преобразует байты в LoRa-символы.
 
@@ -48,31 +48,3 @@ def bytes_to_symbols(data: bytes, p: LoRaParams) -> np.ndarray:
     return np.array(symbols, dtype=np.int32)
 
 
-
-def modulate(data: bytes, p: LoRaParams, fs: float = None) -> np.ndarray:
-    """
-    Полная модуляция: байты → радиосигнал I+jQ.
-
-    Структура пакета (физический фрейм):
-        [преамбула] [sync word] [заголовок] [полезная нагрузка]
-
-    Преамбула: N up-chirp'ов (N = preamble_symbols, стандарт = 8)
-    Sync word: 2 down-chirp'а (идентификатор сети LoRaWAN)
-    Далее: символы данных
-    """
-    base  = generate_base_chirp(p)
-    parts = []
-
-    # Преамбула: preamble_symbols up-chirp'ов
-    for _ in range(p.preamble_symbols):
-        parts.append(base.copy())
-
-    # Sync word (2 down-chirp)
-    parts.append(generate_sync_word(p))
-
-    # Символы данных
-    symbols = bytes_to_symbols(data, p)
-    for sym in symbols:
-        parts.append(generate_chirp(sym, p))
-
-    return np.concatenate(parts)
