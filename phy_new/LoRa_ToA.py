@@ -1,8 +1,7 @@
 # ---------------------------------------------------------------------------
-# 1. Time on Air (ToA)
+# Time on Air (ToA)
 # ---------------------------------------------------------------------------
-# Источник: Semtech AN1200.22, раздел "LoRa Modem Time-on-Air"
-# и SX1276 datasheet, формулы на стр. 31-32.
+
 
 import math
 from params import LoRaParams
@@ -31,6 +30,7 @@ def compute_toa(payload_bytes: int, p: LoRaParams) -> dict:
         IH  = 0 если явный заголовок (explicit header)
         LDR = 1 если Low Data Rate Optimize включён
     """
+    
     Ts = (2 ** p.sf) / p.bw
 
     # Число символов полезной нагрузки
