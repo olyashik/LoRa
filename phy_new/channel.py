@@ -61,6 +61,7 @@ def simulate_channel(signal: np.ndarray, p: LoRaParams,
         n_thermal_dbm = 10 * math.log10(k_b * temperature_k * p.bw) + 30
         pl            = path_loss_db(distance_m, p.freq_hz, path_loss_exp)
         p_rx_dbm      = p.tx_power_dbm - pl
+
         snr_db        = p_rx_dbm - n_thermal_dbm - noise_figure_db
     else:
         # Используем fixed_snr_db напрямую — режим для BER-симуляции
