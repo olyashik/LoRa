@@ -3,13 +3,25 @@ import struct
 import json
 import numpy as np
 
-HEADER_FMT = "!IHH"          # frame_id, chunk_idx, total_chunks
-HEADER_SIZE = struct.calcsize(HEADER_FMT)
+# ---------Сценарий для передачи по UDP---------------------------------
+'''
+Формат упаковки заголовка для модуля struct в Python.
+
+! — сетевой порядок байтов (big-endian, стандарт для передачи по сети).
+
+I — беззнаковое целое 4 байта (unsigned int) — для frame_id.
+
+H — беззнаковое короткое целое 2 байта (unsigned short) — для chunk_idx.
+
+H — ещё одно 2-байтовое беззнаковое целое — для total_chunks.
+'''
+HEADER_FMT = "!IHH"          # frame_id 4, chunk_idx 2, total_chunks 2
+HEADER_SIZE = struct.calcsize(HEADER_FMT) # 4+2+2=8
 CHUNK_BYTES = 1024 - HEADER_SIZE
 
 
 class UDPFrameSender:
-    """Отправляет произвольный bytes-payload, разбивая на чанки."""
+    """Отправляет произвольный bytes-payload, разбивая на фрагменты."""
     def __init__(self, dst_ip: str, dst_port: int):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.dst = (dst_ip, dst_port)
@@ -35,7 +47,7 @@ class UDPFrameReceiver:
     def recv(self) -> bytes | None:
         while True:
             try:
-                packet, _ = self.sock.recvfrom(65535)
+                packet, _ = self.sock.recvfrom(65535) # получение данных из сети, 65535 - максимальный размер буфера в байтах (максимальный теоретический размер UDP-датаграммы)
             except socket.timeout:
                 return None
 
@@ -54,7 +66,7 @@ class UDPFrameReceiver:
         self.sock.close()
 
 
-# ── Упаковка кадра: метаданные + сигнал ────────────────────────────────────
+# --- Упаковка кадра: метаданные + сигнал -------------------------
 
 def pack_frame(snr_db, n_bits, tx_bits: np.ndarray, rx_signal: np.ndarray,
                snr_idx, total_snrs, iter_idx, total_iters) -> bytes:
