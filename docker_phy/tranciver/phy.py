@@ -6,11 +6,11 @@ import numpy as np
 from typing import Tuple, Optional
 import math
 from params import LoRaParams
-from modulate import *
 from LoRa_ToA import *
 from LoRa_Chirp import *
 from LoRa_Coding import *
 from demodulate import *
+from modulate import *
 
 
 def apply_tx_power_and_freq_shift(signal: np.ndarray,

@@ -1,0 +1,25 @@
+services:
+  tx:
+    build: ./tranciver
+    container_name: lora_tx
+    environment:
+      - PYTHONUNBUFFERED=1
+    depends_on:
+      - rx
+    networks:
+      - lora_net
+
+  rx:
+    build: ./reciver
+    container_name: lora_rx
+    environment:
+      - PYTHONUNBUFFERED=1
+    networks:
+      - lora_net
+
+networks:
+  lora_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.28.0.0/16

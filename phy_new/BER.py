@@ -35,9 +35,9 @@ print(f"Rb = {rb:.1f} бит/с")
 print(f"Сдвиг SNR → Eb/N0 = {shift_db:.1f} дБ")
 
 # ── Диапазон SNR (подбираем так чтобы Eb/N0 был от -2 до +10 дБ) ──────────
-eb_n0_min = -2
+eb_n0_min = -15
 eb_n0_max = 10
-snr_range = np.arange(eb_n0_min - shift_db, eb_n0_max - shift_db, 2)
+snr_range = np.arange(eb_n0_min - shift_db, eb_n0_max - shift_db, 1)
 
 print(f"SNR range:   {snr_range[0]:.1f} .. {snr_range[-1]:.1f} дБ")
 print(f"Eb/N0 range: {snr_range[0]+shift_db:.1f} .. {snr_range[-1]+shift_db:.1f} дБ")
@@ -49,7 +49,7 @@ rng     = np.random.default_rng(cfg.RANDOM_SEED)
 for SNR in snr_range:
     BER = []
 
-    for N in range(1000):
+    for N in range(10000):
         n_bits   = cfg.PAYLOAD_BYTES * 8
         tx_bits  = rng.integers(0, 2, n_bits, dtype=np.uint8)
         tx_bytes = np.packbits(tx_bits).tobytes()
@@ -97,7 +97,7 @@ ber_bpsk = 0.5 * erfc(np.sqrt(snr_linear))
 plt.figure(figsize=(9, 6))
 
 plt.semilogy(eb_n0_range, BER_all, 'bo-', linewidth=2,
-             markersize=6, label='LoRa симуляция')
+             markersize=6, label='LoRa симуляция 12')
 
 plt.semilogy(eb_n0_range, ber_bfsk, 'r--',
              linewidth=1.5, label='Некогерентный BFSK (теория)')
@@ -121,7 +121,7 @@ plt.grid(True, which='both', alpha=0.4)
 plt.ylim([1e-5, 1])
 plt.xlim([eb_n0_range[0], eb_n0_range[-1]])
 plt.tight_layout()
-plt.savefig('BER_result.png', dpi=150)
+plt.savefig('BER_result_12.png', dpi=150)
 plt.show()
 
 

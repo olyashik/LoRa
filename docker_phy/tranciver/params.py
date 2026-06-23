@@ -11,7 +11,7 @@ class LoRaParams:
     """
     Все настраиваемые параметры LoRa.
     """
-    sf: int             = 12        # Spreading Factor: 7..12
+    sf: int             = 7        # Spreading Factor: 7..12
     bw: float           = 125e3    # Bandwidth: 125 / 250 / 500 кГц
     cr: int             = 1        # Coding Rate: 1→4/5, 2→4/6, 3→4/7, 4→4/8
     tx_power_dbm: float = 14.0     # мощность передатчика, дБм (макс EU: 14 дБм)
