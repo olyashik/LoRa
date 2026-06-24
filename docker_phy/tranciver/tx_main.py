@@ -1,9 +1,6 @@
-"""
-tx_main.py — передатчик (Transmitter)
-Генерирует один пакет, кодирует, модулирует, накладывает шум канала,
-отправляет по UDP на приёмник.
-"""
-
+import os
+import sys
+import socket
 import setup as cfg
 import numpy as np
 
@@ -12,8 +9,22 @@ from phy import phy_transmit
 from channel import simulate_channel
 from transport import UDPFrameSender, pack_frame
 
-RX_HOST = "192.168.100.2"      # имя сервиса в docker-compose (для GNS3 заменить на статический IP, напр. "192.168.100.2")
-RX_PORT = 5005
+# Получаем IP из переменных окружения или аргументов командной строки
+if len(sys.argv) > 1:
+    RX_HOST = sys.argv[1]
+else:
+    RX_HOST = os.getenv("RX_HOST", "192.168.1.2")
+
+RX_PORT = int(os.getenv("RX_PORT", "5005"))
+
+print(f"[TX] Целевой адрес: {RX_HOST}:{RX_PORT}")
+
+# Проверяем доступность цели
+try:
+    socket.gethostbyname(RX_HOST)
+    print(f"[TX] DNS резолвинг успешен для {RX_HOST}")
+except:
+    print(f"[TX] WARNING: Не удалось разрешить {RX_HOST}")
 
 p = LoRaParams(
     sf=cfg.SF, bw=cfg.BW_KHZ * 1e3, cr=cfg.CR,
@@ -55,8 +66,11 @@ payload = pack_frame(
     iter_idx=0, total_iters=1,
 )
 
-sender = UDPFrameSender(RX_HOST, RX_PORT)
-sender.send(frame_id=0, payload=payload)
-sender.close()
-
-print("[TX] Пакет отправлен")
+try:
+    sender = UDPFrameSender(RX_HOST, RX_PORT)
+    sender.send(frame_id=0, payload=payload)
+    sender.close()
+    print(f"[TX] Пакет отправлен на {RX_HOST}:{RX_PORT}")
+except Exception as e:
+    print(f"[TX] Ошибка отправки: {e}")
+    sys.exit(1)
