@@ -72,6 +72,14 @@
    sudo docker-compose up 
    ```
 
+<img width="1700" height="1100" alt="PER_vs_distance" src="https://github.com/user-attachments/assets/a44b7900-85dc-4a7e-a11c-3437cd6f852b" />
+
+<img width="1600" height="1100" alt="PER_vs_payload_SF7" src="https://github.com/user-attachments/assets/362973e0-6749-4265-a416-db16af2ee0d2" />
+
+<img width="1700" height="1100" alt="PER_vs_SNR_thresholds" src="https://github.com/user-attachments/assets/c3c6e5cb-6379-4f81-b356-8c2e081d5d7c" />
+
+
+
 ### Docker + GNS3
 
 ---
