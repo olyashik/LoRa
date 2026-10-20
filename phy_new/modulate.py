@@ -48,4 +48,3 @@ def modulate(data: bytes, p: LoRaParams) -> np.ndarray:
     return np.array(symbols, dtype=np.int32)
 
 
-

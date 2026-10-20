@@ -1,0 +1,21 @@
+FROM python:3.12-slim
+WORKDIR /app
+
+RUN apt-get update && apt-get install -y \
+    iproute2 \
+    net-tools \
+    iputils-ping \
+    netcat-openbsd \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY . .
+
+# на случай Windows-переносов строк в скрипте
+RUN sed -i 's/\r$//' rx-init.sh && chmod +x rx-init.sh
+
+EXPOSE 5005/udp
+
+ENTRYPOINT ["./rx-init.sh"]

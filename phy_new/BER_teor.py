@@ -1,14 +1,15 @@
 
 # ---------------------------------------------------------------------------
-# BER: теоретическая кривая
+# 7. BER: теоретическая кривая
 # ---------------------------------------------------------------------------
+# Источник: Elshabrawy & Robert, IEEE Comm. Letters 2018
 
 from params import LoRaParams
 import math
 
 def ber_theory(snr_db: float, p: LoRaParams) -> float:
     """
-    Теоретический BER для LoRa в канале AWGN.
+    Теоретический BER для LoRa (некогерентный приёмник) в канале AWGN.
 
     Приближение (Elshabrawy & Robert 2018):
         BER ≈ (2^SF / 2) / (2^SF - 1) × erfc(√(SF·SNR / 2))
@@ -22,7 +23,7 @@ def ber_theory(snr_db: float, p: LoRaParams) -> float:
 
 def snr_threshold_db(p: LoRaParams) -> float:
     """
-    Пороговый SNR для приёма.
+    Пороговый SNR для приёма (из datasheet SX1276, Table 13).
     При этом SNR: BER ≈ 1% (стандарт Semtech).
 
     SF7:  −7.5 дБ   SF10: −15.0 дБ
@@ -31,5 +32,3 @@ def snr_threshold_db(p: LoRaParams) -> float:
     """
     return {7: -7.5, 8: -10.0, 9: -12.5,
             10: -15.0, 11: -17.5, 12: -20.0}[p.sf]
-
-# BER моделирование

@@ -4,7 +4,7 @@ lora_setup.py — все настройки симуляции
 
 # ПАРАМЕТРЫ ТРАНСИВЕРА
 
-SF             = 10        # Spreading Factor: 7..12
+SF             = 7        # Spreading Factor: 7..12
 BW_KHZ         = 125      # Bandwidth: 125 / 250 / 500 кГц
 CR             = 1        # Coding Rate: 1=4/5  2=4/6  3=4/7  4=4/8
 TX_POWER_DBM   = 14.0     # Мощность передатчика, дБм
@@ -15,7 +15,7 @@ EXPLICIT_HDR   = True     # True = явный заголовок (стандар
 
 # ПАРАМЕТРЫ ПАКЕТА
 
-PAYLOAD_BYTES  = 10      # Размер случайного payload, байт (1..255)
+PAYLOAD_BYTES  = 100      # Размер случайного payload, байт (1..255)
 
 RANDOM_SEED    = None     # Сид генератора случайных бит.
                           # None → новый пакет при каждом запуске.
@@ -29,11 +29,33 @@ ENABLE_TOA  =   True     # Включение ToA
 ENABLE_AWGN        = True   # Белый гауссовский шум (тепловой шум приёмника).
                              # False → идеальный канал без шума.
 
-ENABLE_PATH_LOSS   = False   # Потери на распространение (модель log-distance).
+ENABLE_PATH_LOSS   = False  # Потери на распространение (модель log-distance).
                              # False → сигнал приходит без затухания;
                              #         используется FIXED_SNR_DB.
 
-ENABLE_LDR_AUTO    = True   # Авто-включение Low Data Rate Optimize.
+                             # ЗАМИРАНИЯ
+
+ENABLE_RAYLEIGH    = False   # Релеевское замирание (NLOS, множественные пути)
+ENABLE_RICIAN      = False   # Райсовское замирание (есть LOS + рассеяние)
+                              # Если оба True — приоритет у Rician.
+
+K_FACTOR_DB        = 6.0     # Фактор Райса K, дБ. Типично 3..15 дБ для
+                              # частично затенённой LOS-линии.
+
+DOPPLER_HZ         = 0.0     # Максимальная доплеровская частота, Гц.
+                              # 0 -> блочное (квазистатичное) замирание,
+                              # актуально для стационарного узла.
+                              # >0 -> учёт движения/переотражений во времени.
+
+# ГАРМОНИЧЕСКАЯ ПОМЕХА
+
+ENABLE_HARMONIC        = False   # Тональная/гармоническая узкополосная помеха
+HARMONIC_SIR_DB         = 10.0   # Signal-to-Interference Ratio, дБ
+HARMONIC_FREQ_OFFSET_HZ = 5000.0 # Смещение основного тона от центра, Гц
+HARMONIC_N              = 1      # Число гармоник (1 = чистый тон)
+HARMONIC_DECAY          = 0.5    # Затухание амплитуды по номеру гармоники
+
+ENABLE_LDR_AUTO    = False   # Авто-включение Low Data Rate Optimize.
                              # False → LDR всегда выключен.
 
 
@@ -52,7 +74,7 @@ NOISE_FIGURE_DB    = 6.0    # Шум-фигура приёмника, дБ
 TEMPERATURE_K      = 290.0  # Температура для теплового шума, К  (290 К ≈ 17°C)
 
 # Фиксированный SNR, если ENABLE_PATH_LOSS = False:
-FIXED_SNR_DB       = 0.0   # дБ.  Примеры:
+FIXED_SNR_DB       = -7.5   # дБ.  Примеры:
                              #   > 0   — хороший сигнал
                              #   -7.5  — у порога для SF=7
                              #   -20.0 — у порога для SF=12
