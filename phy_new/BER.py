@@ -14,7 +14,7 @@ from channel import *
 from phy import *
 
 
-def compute_ber_curve(sf, n_trials=1000, eb_n0_min=-15, eb_n0_max=10, snr_step=1):
+def compute_ber_curve(sf, n_trials=10000, eb_n0_min=-15, eb_n0_max=10, snr_step=1):
     """
     Считает BER(Eb/N0) для заданного Spreading Factor.
 
@@ -129,7 +129,7 @@ def plot_all_sf(results, save_path="BER_result_all_SF.png"):
     )
     plt.legend(fontsize=9, ncol=2)
     plt.grid(True, which='both', alpha=0.4)
-    plt.ylim([1e-4, 1])
+    plt.ylim([1e-5, 1])
     plt.xlim([eb_n0_all.min(), eb_n0_all.max()])
     plt.tight_layout()
     plt.savefig(save_path, dpi=150)
